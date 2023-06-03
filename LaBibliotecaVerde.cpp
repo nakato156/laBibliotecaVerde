@@ -51,6 +51,7 @@ class BinaryTree {
 			//Se sigue el algoritmo original, IZQUIERDA-DERECHA-RAIZ
 		}
 	}
+
 	int _binSearch(Nodo<T>* nodo, T e) {
 		if (nodo == nullptr) {//sino se encuentra se devuelve -1
 			return -1;
@@ -127,6 +128,15 @@ class BinaryTree {
 		}
 		return actual;
 	}
+	Nodo <T>* _encontrarMax(Nodo<T>* nodo) { //encuentra el valor maximo del arbol, recorriendolo hacia la derecha
+		if (nodo == nullptr) { return 0; } //en caso de que el arbol este vacio
+	
+		while (nodo->der!=nullptr)
+		{
+			nodo = nodo->derecha;
+		}
+		return nodo;		
+	}
 public:
     BinaryTree() {
         raiz = nullptr;
@@ -150,9 +160,10 @@ public:
 		return _obtenerProfundidad(raiz); 
 	}
 	Nodo<T>* eliminar(T eliminar) { return _eliminar(raiz, eliminar); } 
+	Nodo <T>* FoundNext() { return _encontrarSiguiente(raiz); }
+	Nodo <T>* foundMax() { return _encontrarMax(raiz); }
 
 };
-
 ///////////////////////////HASH TABLES//////////////////////////////////////
 template <class K, class V>
 class HashEntidad {
@@ -216,6 +227,26 @@ public:
 		tabla[hash] = new HashEntidad<K, V>(key, value);
 		numElementos++;
 	}
+	void eliminar(K key) {
+		int index = buscar(key);  // Buscar el índice del elemento con la clave proporcionada
+
+		if (index != -1) {
+			delete tabla[index];  // Elimina el elemento en la posición index
+			tabla[index] = nullptr;  // Establece el puntero en la posición index a nullptr
+			numElementos--;  // Decrementa el número de elementos
+
+			// Reorganiza la tabla si es necesario, para evitar los huecos en la tabla, como una posicion vacia donde antes estaba el primer elemento
+			int nextIndex = (index + 1) % modulo;//calcula el siguiente indice
+			while (tabla[nextIndex] != nullptr) {//se sigue ejecutando cuando next index no sea null ptr
+				HashEntidad<K, V>* temp = tabla[nextIndex];//se crea un puntero temp que apunta al siguiente elemento
+				tabla[nextIndex] = nullptr;
+				numElementos--;
+				insertar(temp->getKey(), temp->getValue());//se inserta el elemento temp en la tabla
+				delete temp;
+				nextIndex = (nextIndex + 1) % modulo;
+			}
+		}
+	}
 	int size() {
 		return TABLE_SIZE;
 	}
@@ -223,7 +254,7 @@ public:
 		return numElementos;
 	}
 
-	int buscar(K key) {
+	int buscar(K key) {//buscar en hash
 		int step = 0;
 		size_t i, base;
 		i = base = hashear(key); //hash1 es = a hash2 cuando step=0;
