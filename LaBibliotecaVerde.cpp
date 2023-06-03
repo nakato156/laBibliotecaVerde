@@ -1,4 +1,5 @@
 #include <iostream>
+#include <string>
 #include <algorithm>
 #include <functional>
 using namespace std;
@@ -235,22 +236,16 @@ public:
 			tabla[index] = nullptr;  // Establece el puntero en la posición index a nullptr
 			numElementos--;  // Decrementa el número de elementos
 
-			// Reorganiza la tabla si es necesario, para evitar los huecos en la tabla, como una posicion vacia donde antes estaba el primer elemento
-			int nextIndex = (index + 1) % modulo;//calcula el siguiente indice
-			while (tabla[nextIndex] != nullptr) {//se sigue ejecutando cuando next index no sea null ptr
-				HashEntidad<K, V>* temp = tabla[nextIndex];//se crea un puntero temp que apunta al siguiente elemento
-				tabla[nextIndex] = nullptr;
-				numElementos--;
-				insertar(temp->getKey(), temp->getValue());//se inserta el elemento temp en la tabla
-				delete temp;
-				nextIndex = (nextIndex + 1) % modulo;
-			}
+			auto hashActual = hashear(key);
+			if (hashActual != index) reorganizar(index);
+			else if (hashear(tabla[index + 1].getKey()) == hashActual) reorganizar(index);
 		}
 	}
-	int size() {
+	int sizeTabla() {
 		return TABLE_SIZE;
 	}
-	int sizeactual() {
+
+	int size() {
 		return numElementos;
 	}
 
@@ -282,7 +277,6 @@ public:
 	}
 
 private:
-	template <typename K>
 	size_t hashear(K key) { //convertir cualquier tipo de datos a un valor hash
 		size_t hash = 0;
 		size_t tamBytesKey = sizeof(K);
@@ -294,14 +288,119 @@ private:
 		}
 		return hash % modulo;
 	}
+
+	void reorganizar(int index) {
+		// Reorganiza la tabla si es necesario, para evitar los huecos en la tabla, como una posicion vacia donde antes estaba el primer elemento
+		int nextIndex = (index + 1) % modulo;//calcula el siguiente indice
+		while (tabla[nextIndex] != nullptr) {//se sigue ejecutando cuando next index no sea null ptr
+			HashEntidad<K, V>* temp = tabla[nextIndex];//se crea un puntero temp que apunta al siguiente elemento
+			tabla[nextIndex] = nullptr;
+			numElementos--;
+			insertar(temp->getKey(), temp->getValue());//se inserta el elemento temp en la tabla
+			delete temp;
+			nextIndex = (nextIndex + 1) % modulo;
+		}
+	}
 };
 
 
 //////////////////////////CLASES ENTIDADES/////////////////////////////
+class Fecha {
+private:
+	int dia, mes, anio;
 
+public:
+	Fecha() = default;
+	Fecha(string fecha) {
+		string data[] = { "0", "0", "0" };
+		for (int i = 0; i < 3; i++) {
+			int index = fecha.find("/");
+			data[i] = fecha.substr(0, index);
+			fecha = fecha.substr(index + 1);
+		}
+
+		try {
+			anio = stoi(data[0]);
+			mes = stoi(data[1]);
+			dia = stoi(data[2]);
+		}
+		catch (const exception&) {
+			throw invalid_argument("La fecha no es válida");
+		}
+	}
+	Fecha(int d, int m, int a) : dia(d), mes(m), anio(a) {}
+
+	bool operator==(const Fecha& otraFecha) const {
+		return (dia == otraFecha.dia && mes == otraFecha.mes && anio == otraFecha.anio);
+	}
+
+	bool operator!=(const Fecha& otraFecha) const {
+		return !(*this == otraFecha);
+	}
+
+	bool operator<(const Fecha& otraFecha) const {
+		if (anio < otraFecha.anio)
+			return true;
+		else if (anio > otraFecha.anio)
+			return false;
+		else {
+			if (mes < otraFecha.mes)
+				return true;
+			else if (mes > otraFecha.mes)
+				return false;
+			else
+				return (dia < otraFecha.dia);
+		}
+	}
+
+	bool operator>(const Fecha& otraFecha) const {
+		return (otraFecha < *this);
+	}
+
+	// Sobrecarga del operador de comparación <=
+	bool operator<=(const Fecha& otraFecha) const {
+		return (*this < otraFecha || *this == otraFecha);
+	}
+
+	// Sobrecarga del operador de comparación >=
+	bool operator>=(const Fecha& otraFecha) const {
+		return (*this > otraFecha || *this == otraFecha);
+	}
+	operator string() const {
+		return to_string(dia) + "/" + to_string(mes) + "/" + to_string(anio);
+	}
+};
+
+
+class Libro {
+	string codigo, titulo, autor;
+	Fecha fecha_publicacion;
+	float precio;
+
+public:
+	Libro() = default;
+	Libro(string cod, string title, string author, string date, float price) :
+		codigo(cod), titulo(title), autor(author), fecha_publicacion(date), precio(price) {};
+
+	string getCodigo() { return codigo; }
+	string getTitulo() { return titulo; }
+	string getAutor() { return autor; }
+	string getFechaPub() { return fecha_publicacion; }
+	float getPrecio() { return precio; }
+
+	bool operator<(const Libro& otro) {
+		return fecha_publicacion < otro.fecha_publicacion;
+	}
+};
 
 
 /////////////////////////CLASE COLECCIONADORA/////////////////////////////
+class Biblioteca {
+public:
+	Biblioteca() = default;
+	void insertar();
+	void eliminar();
+};
 
 
 ////////////////////////////CLASE CONTROLADORA////////////////////////
