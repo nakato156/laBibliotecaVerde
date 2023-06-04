@@ -514,13 +514,13 @@ public:
 		}
 		return false;
 	}
-	
+
 	string operator[](const string col) const {
-		std::vector<std::string>::const_iterator it;
+		auto it = columnas.begin();
 		int pos = 0;
 
-		for (it = columnas.begin(); it != columnas.end(); it++)
-		{
+		for (; it != columnas.end(); it++) {
+			cout << *it << "  ";
 			if (col == *it)
 				return vals[pos];
 			pos++;
@@ -539,6 +539,7 @@ class DataFrame {
 	vector<string> data;
 	char separador = ',';
 	int length = 0;
+
 public:
 	DataFrame() = default;
 	int size() { return length; }
@@ -552,10 +553,11 @@ public:
 		}
 
 		string linea;
-		getline(archivo, linea);
-		if (linea != "") {
-			data.push_back(linea);
-			length++;
+		while (getline(archivo, linea)) {
+			if (linea != "") {
+				data.push_back(linea);
+				length++;
+			}
 		}
 
 		archivo.close();
@@ -593,7 +595,8 @@ private:
 			string linea = *it;
 			Fila fila(columnas);
 			auto row = procesarLinea(linea);
-			for (auto campo : row) fila.push(campo);
+			for (auto campo : row)
+				fila.push(campo);
 			filas.push_back(fila);
 		}
 	}
