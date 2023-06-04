@@ -61,7 +61,7 @@ class BinaryTree {
 			return -1;
 		}
 
-		if (e == nodo->elemento) {//si se encuentra se devuelve 1 
+		if (e == nodo->elemento) {//si se encuentra se devuelve 1  
 			return 1;
 		}
 
@@ -231,7 +231,8 @@ public:
 		tabla[hash] = new HashEntidad<K, V>(key, value);
 		numElementos++;
 	}
-	void eliminar(K key) {
+	//Falta arreglar
+	void eliminar(K key) { 
 		int index = buscar(key);  // Buscar el índice del elemento con la clave proporcionada
 
 		if (index != -1) {
@@ -319,18 +320,19 @@ public:
 			data[i] = fecha.substr(0, index);
 			fecha = fecha.substr(index + 1);
 		}
-
+		//Intenta la expresion dentro
 		try {
 			anio = stoi(data[0]);
 			mes = stoi(data[1]);
 			dia = stoi(data[2]);
 		}
+		//si hay error entra al catch y manda el mensaje
 		catch (const exception&) {
 			throw invalid_argument("La fecha no es válida");
 		}
 	}
 	Fecha(int d, int m, int a) : dia(d), mes(m), anio(a) {}
-
+	//SOBRECARGA DE OPERADORES PARA LA CLASE FECHA
 	bool operator==(const Fecha& otraFecha) const {
 		return (dia == otraFecha.dia && mes == otraFecha.mes && anio == otraFecha.anio);
 	}
@@ -367,10 +369,11 @@ public:
 	bool operator>=(const Fecha& otraFecha) const {
 		return (*this > otraFecha || *this == otraFecha);
 	}
+	//conversion de un objeto a string
 	operator string() const {
 		return to_string(dia) + "/" + to_string(mes) + "/" + to_string(anio);
 	}
-
+	//sobrecarga para poder coutear
 	friend ostream& operator<<(ostream& os, const Fecha& fecha) {
 		os << fecha.anio << "/" << fecha.mes << "/" << fecha.dia;
 		return os;
@@ -393,14 +396,21 @@ public:
 	string getAutor() { return autor; }
 	string getFechaPub() { return fecha_publicacion; }
 	float getPrecio() { return precio; }
-
+	//SOBRECARGA DE OPERADORES EN LA CLASE LIBRO
 	bool operator<(const Libro& otro) {
 		return fecha_publicacion < otro.fecha_publicacion;
 	}
 
 	bool operator==(const Libro& otro) {
 		return otro.codigo == codigo;
+	} 
+	bool operator>(const Libro& otro) { 
+		return fecha_publicacion > otro.fecha_publicacion; 
 	}
+	bool operator>=(const Libro& otro) {
+		return fecha_publicacion >= otro.fecha_publicacion; 
+	}
+	//sobrecarga para poder coutear
 	friend ostream& operator<<(ostream& os, Libro libro) {
 		os << libro.codigo << " | " << libro.titulo << " | " 
 			<< libro.autor << " | " << libro.fecha_publicacion << " | " << libro.precio << endl;
@@ -428,22 +438,22 @@ public:
 	void eliminar(Libro libro) {
 		eliminar(libro.getCodigo());
 	}
-
-	void recorrer(TiposOrden orden) const { // se imprime el recorrido
-		if(orden == EnOrden){}
-		else if(orden == PreOrden){}
-		else if(orden == PostOrden){}
+	// impresion de recorridos
+	void recorrer(TiposOrden orden)  {
+		if (orden == EnOrden) { arbol.enOrden(); }
+		else if (orden == PreOrden) { arbol.preOrden(); } 
+		else if (orden == PostOrden) { arbol.postOrden(); } 
 	}
-
-	friend ostream& operator<<(ostream& os, const Biblioteca& b) {
-		b.recorrer(EnOrden); // no sé si funciona
+	//sobrecaga para coutear el recorrido EnOrden
+	friend ostream& operator<<(ostream& os, Biblioteca& b) { 
+		b.recorrer(EnOrden);
 		return os;
 	}
 };
 
-// no se que estoy haciendo, ya tengo sueño
-// si quieren usen lo del profe o lo del TP
-// https://github.com/rsylvian/CSVparser/blob/master/CSVparser.cpp
+//LEER ARCHIVOS
+// falta terminar
+//https://github.com/rsylvian/CSVparser/blob/master/CSVparser.cpp
 struct Fila {
 	string columna;
 	string val;
@@ -495,15 +505,19 @@ private:
 
 
 ////////////////////////////CLASE CONTROLADORA////////////////////////
-using busquedaFunc = void(*)(Libro, Libro); // esto es un alias
+//COMO LAMBDAS
+using busquedaFunc = void(*)(Libro); // esto es un alias
 using ordenamientoFunc = void(*)(); // en el segundo parenteis pones el tipo de parametro que recibe la función
 
 class Tests {
 	Tests() = default;
-
+	//PASAR DOS ALGORITMOS POR PARAMETRO Y QUE LOS COMPARE
+	//DE BUSQUEDA
 	void compararBusqueda(busquedaFunc, busquedaFunc){}
-	void compararOrdenameinto(busquedaFunc, busquedaFunc){}
+	//DE ORDENAMIENTO
+	void compararOrdenameinto(ordenamientoFunc, ordenamientoFunc){} 
 
+	//EXPORTAR LOS RESULTADOS OBTENIDOS A UN TXT
 	void export(double tiempo, string tipoAlgoritmo, int cantDatos) {
 		ofstream archivo("resultados.txt");
 		if (!archivo.is_open()) {
@@ -514,7 +528,7 @@ class Tests {
 		}
 	}
 };
-
+//UNIR TODO AL MAIN
 int main()
 {
     return 0;
