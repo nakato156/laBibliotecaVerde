@@ -1,7 +1,10 @@
 #include <iostream>
+#include <fstream>
 #include <string>
 #include <algorithm>
 #include <functional>
+#include <vector>
+
 using namespace std;
 
 ////////////////////////////////clases genericas (estructuras de datos)/////////////////////////////////////////////////////
@@ -368,6 +371,11 @@ public:
 	operator string() const {
 		return to_string(dia) + "/" + to_string(mes) + "/" + to_string(anio);
 	}
+
+	friend ostream& operator<<(ostream& os, const Fecha& fecha) {
+		os << fecha.anio << "/" << fecha.mes << "/" << fecha.dia;
+		return os;
+	}
 };
 
 
@@ -390,19 +398,124 @@ public:
 	bool operator<(const Libro& otro) {
 		return fecha_publicacion < otro.fecha_publicacion;
 	}
+
+	bool operator==(const Libro& otro) {
+		return otro.codigo == codigo;
+	}
+	friend ostream& operator<<(ostream& os, Libro libro) {
+		os << libro.codigo << " | " << libro.titulo << " | " 
+			<< libro.autor << " | " << libro.fecha_publicacion << " | " << libro.precio << endl;
+		return os;
+	}
 };
 
 
 /////////////////////////CLASE COLECCIONADORA/////////////////////////////
+enum TiposOrden { EnOrden, PreOrden, PostOrden };
+
 class Biblioteca {
+	BinaryTree<Libro> arbol;
+	HashTabla<string, Libro> tablaHash;
 public:
 	Biblioteca() = default;
-	void insertar();
-	void eliminar();
+	void insertar(Libro libro) {
+		arbol.insert(libro);
+		tablaHash.insertar(libro.getCodigo(), libro);
+	}
+	void eliminar(string codigo) {
+		arbol.eliminar(Libro(codigo, "", "", "", 0));
+		tablaHash.eliminar(codigo);
+	}
+	void eliminar(Libro libro) {
+		eliminar(libro.getCodigo());
+	}
+
+	void recorrer(TiposOrden orden) const { // se imprime el recorrido
+		if(orden == EnOrden){}
+		else if(orden == PreOrden){}
+		else if(orden == PostOrden){}
+	}
+
+	friend ostream& operator<<(ostream& os, const Biblioteca& b) {
+		b.recorrer(EnOrden); // no sé si funciona
+		return os;
+	}
+};
+
+// no se que estoy haciendo, ya tengo sueño
+// si quieren usen lo del profe o lo del TP
+// https://github.com/rsylvian/CSVparser/blob/master/CSVparser.cpp
+struct Fila {
+	string columna;
+	string val;
+	Fila() = default;
+	Fila(string col, string val_) : columna(col), val(val_) {};
+};
+
+class DataFrame {
+	vector<string> columnas;
+	vector<vector<string>> filas;
+	int size = 0;
+public:
+	DataFrame() = default;
+	int size() { return size; }
+	void read_csv(const string filename, const char sep = ',') {
+		ifstream archivo(filename);
+
+		if (!archivo.is_open()) {
+			cerr << "No se pudo leer el archivo" << endl;
+			return;
+		}
+
+		string linea;
+		while (getline(archivo, linea)) {
+			vector<string> fila;
+			int pos;
+			while((pos = linea.find(sep)) != string::npos){
+				string campo = linea.substr(0, pos);
+				fila.push_back(campo);
+				linea.erase(0, pos + 1);
+			}
+			fila.push_back(linea);
+			filas.push_back(fila);
+			size++;
+		}
+
+		archivo.close();
+	}
+
+private:
+	vector<string> getRow(int i) {
+		return filas[i];
+	}
+
+	vector<string>& operator[](int i) {
+		return filas[i];
+	}
 };
 
 
 ////////////////////////////CLASE CONTROLADORA////////////////////////
+using busquedaFunc = void(*)(Libro, Libro); // esto es un alias
+using ordenamientoFunc = void(*)(); // en el segundo parenteis pones el tipo de parametro que recibe la función
+
+class Tests {
+	Tests() = default;
+
+	void compararBusqueda(busquedaFunc, busquedaFunc){}
+	void compararOrdenameinto(busquedaFunc, busquedaFunc){}
+
+	void export(double tiempo, string tipoAlgoritmo, int cantDatos) {
+		ofstream archivo("resultados.txt");
+		if (!archivo.is_open()) {
+			archivo << "Tiempo: " << tiempo;
+			archivo << "Algoritmo: " << tipoAlgoritmo;
+			archivo << "Cant. de datos: " << cantDatos;
+			archivo.close();
+		}
+	}
+};
+
 int main()
 {
     return 0;
