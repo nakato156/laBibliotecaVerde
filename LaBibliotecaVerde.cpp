@@ -82,18 +82,26 @@ class BinaryTree {
 	}
 
 	//pasar los elemento del arbol a un vector
-	void _treeToVector(Nodo<T>* nodo) {
+	void _treeToVector(Nodo<T>* nodo) { 
 		if (nodo != nullptr) {
-			vec.push_back(nodo->elemento);  
-			//lo agregamos por el recorrido preOrden para hacerlo desordenado
-			_preOrden(nodo->izq);
-			_preOrden(nodo->der);
+			vec.push_back(nodo->elemento); 
+			_treeToVector(nodo->izq); 
+			_treeToVector(nodo->der); 
 		}
 	}
 	vector<T> _getVector() { 
 		return vec;
 	} 
-
+	void _printVector(const std::vector<T>& vec) {
+		cout << "[";
+		for (size_t i = 0; i < vec.size(); i++) {
+			cout << vec[i];
+			if (i != vec.size() - 1) {
+				cout << ", ";
+			}
+		}
+		cout << "]" << endl;
+	}
 	int _interpolation_search(int n, T X)
 	{
 		int lo = 0;
@@ -278,11 +286,11 @@ public:
 	Nodo <T>* FoundNext() { return _encontrarSiguiente(raiz); }
 	Nodo <T>* foundMax() { return _encontrarMax(raiz); }
 
-	int nextGap(int gap) { _nextGap(gap);}
+	int nextGap(int gap) { return _nextGap(gap);}
 
 	void combSort(int n, function<bool(T, T)> comparador) {_combSort(n, comparador);}
 
-	int partition(int low, int high, function<bool(T, T)> comparador) {_partition(low, high, comparador);}
+	int partition(int low, int high, function<bool(T, T)> comparador) {return  _partition(low, high, comparador);}
 
 	void quickSort(int low, int high, function<bool(T, T)> comparador) {
 		_quickSort(low, high, comparador);		//low es 0, high es tamanio del arreglo - 1 y el comparador el operador		
