@@ -1,7 +1,7 @@
 #include <iostream>
 #include <fstream>
 #include <string>
-#include <algorithm>
+#include <algorithm> 
 #include <functional>
 #include <vector>
 
@@ -128,6 +128,7 @@ class BinaryTree {
 
 		}
 	}
+
 	Nodo<T>* _eliminar(Nodo<T>* nodo, T valor) {
 		//en caso de que el elemento a eliminar sea la raiz o sea hoja
 		if (nodo == nullptr) {														//primero confirmamos que el arbol no este vacio (raiz)
@@ -162,7 +163,9 @@ class BinaryTree {
 		}
 		return nodo;
 	}
+
 	//metodo que nos servira para encontrar al siguiente
+
 	Nodo<T>* _encontrarSiguiente(Nodo<T>* nodo) {
 		Nodo<T>* actual = nodo;
 		while (actual && actual->izq != nullptr) {
@@ -170,6 +173,7 @@ class BinaryTree {
 		}
 		return actual;
 	}
+
 	Nodo <T>* _encontrarMax(Nodo<T>* nodo) { //encuentra el valor maximo del arbol, recorriendolo hacia la derecha
 		if (nodo == nullptr) { return 0; } //en caso de que el arbol este vacio
 	
@@ -179,6 +183,72 @@ class BinaryTree {
 		}
 		return nodo;		
 	}
+
+	//ordenamiento
+	int _nextGap(int gap)
+	{
+		// Shrink gap by Shrink factor
+		gap = (gap * 10) / 13;
+
+		if (gap < 1)
+			return 1;
+		return gap;
+	} 
+	 
+	void _combSort(int n, function<bool(T, T)> comparador) {  // n es la cantidad de elementos que tiene el vector
+		// Initialize gap
+		int gap = n;
+
+		// Initialize swapped as true to make sure that
+		// loop runs
+		bool swapped = true;
+
+		// Keep running while gap is more than 1 and last
+		// iteration caused a swap
+		while (gap != 1 || swapped == true)
+		{
+			// Find next gap
+			gap = _nextGap(gap);
+
+			// Initialize swapped as false so that we can
+			// check if swap happened or not
+			swapped = false;
+
+			// Compare all elements with current gap
+			for (int i = 0; i < n - gap; i++)
+			{
+				if (comparador(vec[i], vec[i + gap])) 
+				{
+					swap(vec[i], vec[i + gap]);    
+					swapped = true;
+				}
+			}
+		}
+	}  
+
+	int _partition(int low, int high, function<bool( T,  T)> comparador) {
+		T pivote = vec[high];
+		int i = (low - 1);
+
+		for (int j = low; j <= high - 1; j++) {
+			if (comparador(vec[j], pivote)) {
+				i++;
+				swap(vec[i], vec[j]); 
+			}
+		}
+		swap(vec[i + 1], vec[high]); 
+		return (i + 1);
+	}
+
+	void _quickSort(int low, int high, function<bool(T,T)> comparador) {
+		if (low < high) {
+			int pi = _partition(vec, low, high, comparador);  
+
+			_quickSort(vec, low, pi - 1, comparador);  
+			_quickSort(vec, pi + 1, high, comparador); 
+		} 
+	}
+
 public:
     BinaryTree() {
         raiz = nullptr;
@@ -207,6 +277,16 @@ public:
 	Nodo<T>* eliminar(T eliminar) { return _eliminar(raiz, eliminar); } 
 	Nodo <T>* FoundNext() { return _encontrarSiguiente(raiz); }
 	Nodo <T>* foundMax() { return _encontrarMax(raiz); }
+
+	int nextGap(int gap) { _nextGap(gap);}
+
+	void combSort(int n, function<bool(T, T)> comparador) {_combSort(n, comparador);}
+
+	int partition(int low, int high, function<bool(T, T)> comparador) {_partition(low, high, comparador);}
+
+	void quickSort(int low, int high, function<bool(T, T)> comparador) {
+		_quickSort(low, high, comparador);		//low es 0, high es tamanio del arreglo - 1 y el comparador el operador		
+	}
 
 };
 ///////////////////////////HASH TABLES//////////////////////////////////////
