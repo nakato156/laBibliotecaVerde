@@ -251,7 +251,7 @@ public:
 		delete[] tabla;
 	}
 	//Direccionamiento según Prueba Lineal
-	void insertar(K key, V value) {
+	void insertar(const K& key, V value) {
 		//Hash prima
 		size_t base, hash;
 		int step;
@@ -272,6 +272,7 @@ public:
 		tabla[hash] = new HashEntidad<K, V>(key, value);
 		numElementos++;
 	}
+
 	//Falta arreglar
 	void eliminar(K key) { 
 		int index = buscar(key);  // Buscar el índice del elemento con la clave proporcionada
@@ -294,19 +295,18 @@ public:
 		return numElementos;
 	}
 
-	int buscar(K key) {//buscar en hash
+	int buscar(const K& key) {//buscar en hash
 		int step = 0;
 		size_t i, base;
 		i = base = hashear(key); //hash1 es = a hash2 cuando step=0;
 		//hashear, en caso de que la clave no sea un valor entero o flotante.
 		while (true)
 		{
-			if (tabla[i] == nullptr) return -1;		//si el elemento esta vacio, devolver -1. Es decir, error,no existe.
-			else if (tabla[i]->getKey() == key) {	// si esta lleno, que me retorne el indice de la clave
+			if (tabla[i] == nullptr) return -1;
+			else if (tabla[i]->getKey() == key) {
 				return i;
 			}
-			else step++;							//si no, que el salto aumente, osea que vaya al siguiente espacio
-
+			else step++;  //si no, que el salto aumente, osea que vaya al siguiente espacio
 			i = (base + step) % modulo;				//modulamos
 		}
 	}
@@ -322,10 +322,10 @@ public:
 	}
 
 private:
-	size_t hashear(K key) { //convertir cualquier tipo de datos a un valor hash
+	size_t hashear(const K& key) { //convertir cualquier tipo de datos a un valor hash
 		size_t hash = 0;
 		size_t tamBytesKey = sizeof(K);
-		unsigned char* data = reinterpret_cast<unsigned char*>(&key); //convertir un tipo de dato a otro de una manera distinta. Cambia los bytes de un tipo a otro
+		const unsigned char* data = reinterpret_cast<const unsigned char*>(&key); //convertir un tipo de dato a otro de una manera distinta. Cambia los bytes de un tipo a otro
 		//cadena de caracteres		unsigned para no guardar el signo
 		for (int i = 0; i < tamBytesKey; i++) {
 			hash ^= data[i];
