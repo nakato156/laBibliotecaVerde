@@ -18,6 +18,7 @@ public:
 };
 template <class T>
 class BinaryTree {
+	vector<T> vec;  
     Nodo<T>* raiz;
 
     bool _insert(Nodo<T>*& nodo, T e) {
@@ -38,19 +39,19 @@ class BinaryTree {
         cout << nodo->elemento << endl;
         _enOrden(nodo->der);
     }
-	void _imprimirPreorden(Nodo<T>* nodo) {
+	void _preOrden(Nodo<T>* nodo) {
 		if (nodo != nullptr) {											//primero confirmamos que el arbol no este vacio (raiz)
 			cout << nodo->elemento << " ";						//imprimimos el elemento
-			_imprimirPreorden(nodo->izq);						//recursividad pero ahora comparando el hijo izquierdo. 
-			_imprimirPreorden(nodo->der);						//recursividad con el hijo derecho
+			_preOrden(nodo->izq);						//recursividad pero ahora comparando el hijo izquierdo. 
+			_preOrden(nodo->der);						//recursividad con el hijo derecho
 			//Se sigue el algoritmo original, RAIZ-IZQUIERDA-DERECHA
 		}
 	}
 
-	void _imprimirPostorden(Nodo<T>* nodo) {
+	void _postOrden(Nodo<T>* nodo) {
 		if (nodo != nullptr) {										//primero confirmamos que el arbol no este vacio (raiz)
-			_imprimirPostorden(nodo->izq);				//recursividad pero ahora comparando el hijo izquierdo. 
-			_imprimirPostorden(nodo->der);				//recursividad con el hijo derecho
+			_postOrden(nodo->izq);				//recursividad pero ahora comparando el hijo izquierdo. 
+			_postOrden(nodo->der);				//recursividad con el hijo derecho
 			cout << nodo->elemento << " ";					//imprimimos el elemento
 			//Se sigue el algoritmo original, IZQUIERDA-DERECHA-RAIZ
 		}
@@ -80,10 +81,40 @@ class BinaryTree {
 		return -1;
 	}
 
-	Nodo<T>* _interpolarSearch(Nodo<T>* nodo, T data) { 
-		if (nodo == nullptr || nodo->elemento == data) return nodo; 
-		else if (data < nodo->elemento) return _interpolarSearch(nodo->izq, data);
-		else  return _interpolarSearch(nodo->der, data);
+	//pasar los elemento del arbol a un vector
+	void _treeToVector(Nodo<T>* nodo) {
+		if (nodo != nullptr) {
+			vec.push_back(nodo->elemento);  
+			//lo agregamos por el recorrido preOrden para hacerlo desordenado
+			_preOrden(nodo->izq);
+			_preOrden(nodo->der);
+		}
+	}
+	vector<T> _getVector() { 
+		return vec;
+	} 
+
+	int _interpolation_search(int n, T X)
+	{
+		int lo = 0;
+		int hi = n - 1;
+		int mid;
+
+		while ((vec[hi] != vec[lo]) && (X >= vec[lo]) && (X <= vec[hi])) {
+			mid = lo + ((X - vec[lo]) * (hi - lo) / (vec[hi] - vec[lo]));
+
+			if (vec[mid] < X)
+				lo = mid + 1;
+			else if (X < vec[mid])
+				hi = mid - 1;
+			else
+				return mid;
+		}
+
+		if (X == vec[lo])
+			return lo;
+		else
+			return -1;
 	}
 
 	int _obtenerProfundidad(Nodo<T>* nodo) {//caso0 
@@ -159,20 +190,20 @@ public:
         _enOrden(raiz);
     }
 	void postOrden() {
-		_imprimirPostorden(raiz);
+		_postOrden(raiz);
 	}
-	void preOrden() { 
-		_imprimirPreorden(raiz); 
-	}
-	int binSearch(T e) {
-		return _binSearch(raiz,e);
-	}
+	void preOrden() { _preOrden(raiz); }
 
-	Nodo<T>* interpolarSearch(T e) { return _interpolarSearch(raiz, e); }
+	int binSearch(T e) { return _binSearch(raiz,e);	}
 
-	int obtProfundidad() { 
-		return _obtenerProfundidad(raiz); 
-	}
+	void treeToVector() { _treeToVector(raiz); }
+
+	vector<T> getVector() { return _getVector(); }
+
+	int interpolarSearch(int n, T X) { return _interpolation_search(n, X);	}
+
+	int obtProfundidad() { return _obtenerProfundidad(raiz); }
+
 	Nodo<T>* eliminar(T eliminar) { return _eliminar(raiz, eliminar); } 
 	Nodo <T>* FoundNext() { return _encontrarSiguiente(raiz); }
 	Nodo <T>* foundMax() { return _encontrarMax(raiz); }
