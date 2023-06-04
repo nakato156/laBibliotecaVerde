@@ -256,19 +256,19 @@ public:
 		//hashear, en caso de que la clave no sea un valor entero o flotante.
 		while (true)
 		{
-			if (tabla[i] == nullptr) return -1;						//si el elemento esta vacio, devolver -1. Es decir, error,no existe.
-			else if (tabla[i]->getKey() == key) {				// si esta lleno, que me retorne el indice de la clave
+			if (tabla[i] == nullptr) return -1;		//si el elemento esta vacio, devolver -1. Es decir, error,no existe.
+			else if (tabla[i]->getKey() == key) {	// si esta lleno, que me retorne el indice de la clave
 				return i;
 			}
-			else step++;														//si no, que el salto aumente, osea que vaya al siguiente espacio
+			else step++;							//si no, que el salto aumente, osea que vaya al siguiente espacio
 
-			i = (base + step) % modulo;							//modulamos
+			i = (base + step) % modulo;				//modulamos
 		}
 	}
 
 	V get(K key) {
 		int i = buscar(key);
-		if (i != -1) {										//revisar si la clave a buscar existe en la tabla
+		if (i != -1) {								//revisar si la clave a buscar existe en la tabla
 			return tabla[i]->getValue();			//si existe, que me retorne el valor.
 		}
 		else {
@@ -281,8 +281,7 @@ private:
 		size_t hash = 0;
 		size_t tamBytesKey = sizeof(K);
 		unsigned char* data = reinterpret_cast<unsigned char*>(&key); //convertir un tipo de dato a otro de una manera distinta. Cambia los bytes de un tipo a otro
-		//cadena de caracteres
-		//unsigned para no guardar el signo
+		//cadena de caracteres		unsigned para no guardar el signo
 		for (int i = 0; i < tamBytesKey; i++) {
 			hash ^= data[i];
 		}
@@ -291,12 +290,12 @@ private:
 
 	void reorganizar(int index) {
 		// Reorganiza la tabla si es necesario, para evitar los huecos en la tabla, como una posicion vacia donde antes estaba el primer elemento
-		int nextIndex = (index + 1) % modulo;//calcula el siguiente indice
-		while (tabla[nextIndex] != nullptr) {//se sigue ejecutando cuando next index no sea null ptr
-			HashEntidad<K, V>* temp = tabla[nextIndex];//se crea un puntero temp que apunta al siguiente elemento
+		int nextIndex = (index + 1) % modulo;	//calcula el siguiente indice
+		while (tabla[nextIndex] != nullptr) {	//se sigue ejecutando cuando next index no sea null ptr
+			HashEntidad<K, V>* temp = tabla[nextIndex];	//se crea un puntero temp que apunta al siguiente elemento
 			tabla[nextIndex] = nullptr;
 			numElementos--;
-			insertar(temp->getKey(), temp->getValue());//se inserta el elemento temp en la tabla
+			insertar(temp->getKey(), temp->getValue());	//se inserta el elemento temp en la tabla
 			delete temp;
 			nextIndex = (nextIndex + 1) % modulo;
 		}
