@@ -372,7 +372,7 @@ public:
 
 			auto hashActual = hashear(key);
 			if (hashActual != index) reorganizar(index);
-			else if (hashear(tabla[index + 1].getKey()) == hashActual) reorganizar(index);
+			else if (hashear(tabla[index + 1]->getKey()) == hashActual) reorganizar(index);
 		}
 	}
 	int sizeTabla() {
@@ -705,7 +705,7 @@ class Tests {
 	void compararOrdenameinto(ordenamientoFunc, ordenamientoFunc){} 
 
 	//EXPORTAR LOS RESULTADOS OBTENIDOS A UN TXT
-	void export(double tiempo, string tipoAlgoritmo, int cantDatos) {
+	void exportar(double tiempo, string tipoAlgoritmo, int cantDatos) {
 		ofstream archivo("resultados.txt");
 		if (!archivo.is_open()) {
 			archivo << "Tiempo: " << tiempo;
