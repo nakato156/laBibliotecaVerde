@@ -495,21 +495,55 @@ public:
 //LEER ARCHIVOS
 // falta terminar
 //https://github.com/rsylvian/CSVparser/blob/master/CSVparser.cpp
-struct Fila {
-	string columna;
-	string val;
+class Fila {
+	vector<string> columnas;
+	vector<string> vals;
+
+public:
 	Fila() = default;
-	Fila(string col, string val_) : columna(col), val(val_) {};
+	Fila(const vector<string>& cols) : columnas(cols) {};
+	void push(const string& val) { vals.push_back(val); }
+	bool set(const string& col, const string& val) {
+		int pos = 0;
+		for (auto it = columnas.begin(); it != columnas.end(); it++) {
+			if (col == *it) {
+				vals[pos] = val;
+				return true;
+			}
+			pos++;
+		}
+		return false;
+	}
+	
+	string operator[](const string col) const {
+		std::vector<std::string>::const_iterator it;
+		int pos = 0;
+
+		for (it = columnas.begin(); it != columnas.end(); it++)
+		{
+			if (col == *it)
+				return vals[pos];
+			pos++;
+		}
+	}
+
+	const string operator[](unsigned int valuePosition) const {
+		if (valuePosition < vals.size())
+			return vals[valuePosition];
+	}
 };
 
 class DataFrame {
 	vector<string> columnas;
-	vector<vector<string>> filas;
-	int size = 0;
+	vector<Fila> filas;
+	vector<string> data;
+	char separador = ',';
+	int length = 0;
 public:
 	DataFrame() = default;
-	int size() { return size; }
+	int size() { return length; }
 	void read_csv(const string filename, const char sep = ',') {
+		separador = sep;
 		ifstream archivo(filename);
 
 		if (!archivo.is_open()) {
@@ -518,29 +552,50 @@ public:
 		}
 
 		string linea;
-		while (getline(archivo, linea)) {
-			vector<string> fila;
-			int pos;
-			while((pos = linea.find(sep)) != string::npos){
-				string campo = linea.substr(0, pos);
-				fila.push_back(campo);
-				linea.erase(0, pos + 1);
-			}
-			fila.push_back(linea);
-			filas.push_back(fila);
-			size++;
+		getline(archivo, linea);
+		if (linea != "") {
+			data.push_back(linea);
+			length++;
 		}
 
 		archivo.close();
+		parseHeader();
+		parseContenido();
 	}
+
+	Fila getRow(int i) const { return filas[i]; }
+	Fila& operator[](int i) { return filas[i]; }
 
 private:
-	vector<string> getRow(int i) {
-		return filas[i];
+	void parseHeader() {
+		auto it = data.begin();
+		string linea = *it;
+		vector<string> header = procesarLinea(linea);
+		columnas = header;
 	}
 
-	vector<string>& operator[](int i) {
-		return filas[i];
+	vector<string> procesarLinea(string linea) {
+		vector<string> fila;
+		int pos;
+		while ((pos = linea.find(separador)) != string::npos) {
+			string campo = linea.substr(0, pos);
+			fila.push_back(campo);
+			linea.erase(0, pos + 1);
+		}
+		fila.push_back(linea);
+		return fila;
+	}
+
+	void parseContenido() {
+		auto it = data.begin();
+		it++;
+		for (; it != data.end(); it++) {
+			string linea = *it;
+			Fila fila(columnas);
+			auto row = procesarLinea(linea);
+			for (auto campo : row) fila.push(campo);
+			filas.push_back(fila);
+		}
 	}
 };
 
