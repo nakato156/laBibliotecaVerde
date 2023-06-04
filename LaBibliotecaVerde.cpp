@@ -79,6 +79,13 @@ class BinaryTree {
 		}
 		return -1;
 	}
+
+	Nodo<T>* _interpolarSearch(Nodo<T>* nodo, T data) { 
+		if (nodo == nullptr || nodo->elemento == data) return nodo; 
+		else if (data < nodo->elemento) return _interpolarSearch(nodo->izq, data);
+		else  return _interpolarSearch(nodo->der, data);
+	}
+
 	int _obtenerProfundidad(Nodo<T>* nodo) {//caso0 
 		if (nodo == nullptr) { return 0; } //en caso de que el arbol este vacio
 		else
@@ -127,7 +134,7 @@ class BinaryTree {
 	//metodo que nos servira para encontrar al siguiente
 	Nodo<T>* _encontrarSiguiente(Nodo<T>* nodo) {
 		Nodo<T>* actual = nodo;
-		while (actual->izq != nullptr) {
+		while (actual && actual->izq != nullptr) {
 			actual = actual->izq;
 		}
 		return actual;
@@ -160,6 +167,9 @@ public:
 	int binSearch(T e) {
 		return _binSearch(raiz,e);
 	}
+
+	Nodo<T>* interpolarSearch(T e) { return _interpolarSearch(raiz, e); }
+
 	int obtProfundidad() { 
 		return _obtenerProfundidad(raiz); 
 	}
