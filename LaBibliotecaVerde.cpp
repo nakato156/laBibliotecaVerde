@@ -807,6 +807,7 @@ int main()
 		else {//ACA VA EL MERGE}
 			break;
 		}
+	}
 	case 3: {
 		//BUSCAR LIBRO POR CODIGO
 		break;
@@ -825,7 +826,6 @@ int main()
 			//ACA SE MUESTRAN LOS RESULTADOS EL TXT
 		}
 		break;
-	}
 	}
 	}
     return 0;
