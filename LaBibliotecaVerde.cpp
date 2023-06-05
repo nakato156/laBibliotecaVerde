@@ -607,6 +607,14 @@ private:
 		}
 		return hash % modulo;
 	}
+	
+	size_t sumaCaracteresHash(const std::string& entrada) {
+		size_t hash = 0;
+		for (char c : entrada) {
+			hash += static_cast<size_t>(c);
+		}
+		return hash % modulo;
+	}
 
 	void reorganizar(int index) {
 		// Reorganiza la tabla si es necesario, para evitar los huecos en la tabla, como una posicion vacia donde antes estaba el primer elemento
