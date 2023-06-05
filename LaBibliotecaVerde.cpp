@@ -768,8 +768,65 @@ class Tests {
 		}
 	}
 };
+
+int menu() {
+	int eleccion;
+	cout << "Bienvenido a la LIBERIA VERDE UPECINA" << endl;
+	cout << "Seleccione la operacion que desea ejecutar: " << endl;
+	cout << "1) Mostrar el registro de libros " << endl;
+	cout << "2) Ordenar el registro " << endl;
+	cout << "3) Buscar en el registro " << endl;
+	cout << "4) Eliminar un libro " << endl;
+	cout << "5) Ejecutar el testeo " << endl;
+	cin >> eleccion;
+	return eleccion; 
+}
 //UNIR TODO AL MAIN
 int main()
 {
+	int eleccion = menu();
+	switch (eleccion) 
+	{
+	case 1: {
+		//MOSTRAR EL REGISTRO DESORDENADO
+		break;
+	}
+	case 2: {
+		int ordenamiento;
+		cout << "Como desea ordenarlos? " << endl;
+		cout << "1) CombSort " << endl;
+		cout << "2) QuickSort " << endl;
+		cout << "3) MergeSort " << endl;
+		cin >> ordenamiento;
+		if (ordenamiento == 1) {
+			//ACA VA EL COMB
+		}
+		else if (ordenamiento == 2) {
+			//ACA VA EL QUICK
+		}
+		else {//ACA VA EL MERGE}
+			break;
+		}
+	case 3: {
+		//BUSCAR LIBRO POR CODIGO
+		break;
+	}
+	case 4: {
+		//ELIMINAR LIBRO POR CODIGO
+		break;
+	}
+	case 5: {
+		char decision;
+		//TESTEAR
+		cout << "Desea ver los resultados? "; cin >> decision;
+		decision = toupper(decision);
+		if (decision == 'F') break;
+		else {
+			//ACA SE MUESTRAN LOS RESULTADOS EL TXT
+		}
+		break;
+	}
+	}
+	}
     return 0;
 }
