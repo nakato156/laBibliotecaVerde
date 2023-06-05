@@ -257,6 +257,57 @@ class BinaryTree {
 		} 
 	}
 
+	void _merge(int left, int mid, int right, function<bool(T, T)> comparador) {
+		int n1 = mid - left + 1;
+		int n2 = right - mid;
+
+		vector<T> leftArr(n1);
+		vector<T> rightArr(n2);
+
+		for (int i = 0; i < n1; i++) {
+			leftArr[i] = vec[left + i];
+		}
+
+		for (int j = 0; j < n2; j++) {
+			rightArr[j] = vec[mid + 1 + j];
+		}
+
+		int i = 0, j = 0, k = left;
+		while (i < n1 && j < n2) {
+			if (comparador(leftArr[i], rightArr[j])) {
+				vec[k] = leftArr[i];
+				i++;
+			}
+			else {
+				vec[k] = rightArr[j]; 
+				j++;
+			}
+			k++;
+		}
+
+		while (i < n1) {
+			vec[k] = leftArr[i]; 
+			i++;  
+			k++;
+		}
+
+		while (j < n2) {
+			vec[k] = rightArr[j];
+			j++;
+			k++;
+		}
+	}
+
+	void _mergeSort(int left, int right, function<bool(T, T)> comparador) { 
+		if (left < right) { 
+			int mid = left + (right - left) / 2; 
+
+			_mergeSort(left, mid, comparador); 
+			_mergeSort(mid + 1, right, comparador); 
+			_merge(left, mid, right, comparador); 
+		} 
+	}
+
 public:
     BinaryTree() {
         raiz = nullptr;
@@ -295,7 +346,9 @@ public:
 	void quickSort(int low, int high, function<bool(T, T)> comparador) {
 		_quickSort(low, high, comparador);		//low es 0, high es tamanio del arreglo - 1 y el comparador el operador		
 	}
+	void merge(int left, int mid, int right, function<bool(T, T)> comparador) { _merge(left, mid, right, comparador); } 
 
+	void mergeSort(int left, int right, function<bool(T, T)> comparador) { _mergeSort(left, right, comparador); } 
 };
 ///////////////////////////HASH TABLES//////////////////////////////////////
 template <class K, class V>
