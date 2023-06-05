@@ -4,41 +4,112 @@
 #include <algorithm> 
 #include <functional>
 #include <vector>
+#include <chrono>
+#include <time.h>
+#include <windows.h>
 
 using namespace std;
+
+void dibujarLogo() {
+	int logo[25][50] = {
+{0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0},
+{0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0},
+{0,0,0,0,1,1,1,1,1,1,0,0,0,0,0,0,0,1,1,1,1,1,1,0,0,0,0,0,0,0,0,1,1,1,0,0,0,0,0,0,1,1,1,0,0,0,0,0,0,0},
+{0,0,0,1,2,2,2,2,2,2,1,1,1,1,1,1,1,2,2,2,2,2,2,1,0,0,0,0,0,1,1,3,3,3,1,1,0,1,1,1,4,4,4,1,1,0,0,0,0,0},
+{0,0,1,2,2,5,5,2,2,1,2,2,2,2,2,2,2,1,2,2,5,5,2,2,1,0,0,0,1,3,3,3,3,3,3,3,1,3,3,1,1,1,1,1,3,1,0,0,0,0},
+{0,0,1,2,2,5,5,2,1,2,2,2,2,2,2,2,2,2,1,2,5,5,2,2,1,0,0,0,1,3,3,3,3,3,3,3,1,3,3,1,6,6,6,1,3,3,1,0,0,0},
+{0,0,1,2,2,5,5,1,2,2,2,2,2,2,2,2,2,2,2,1,5,5,2,2,1,0,1,1,1,3,3,3,3,3,3,3,1,3,3,1,6,6,6,1,3,3,1,1,1,0},
+{0,0,1,2,2,5,1,2,2,2,2,2,2,2,2,2,2,2,2,2,1,5,2,2,1,0,1,4,1,3,6,3,3,6,3,3,1,3,3,1,6,6,6,1,3,3,1,4,1,0},
+{0,0,0,1,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,1,0,0,1,4,1,3,6,3,3,6,3,3,1,3,3,1,6,1,6,1,3,3,1,4,1,0},
+{0,0,0,0,1,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,1,0,0,0,1,4,1,3,6,3,3,6,3,3,1,3,3,1,1,1,1,1,3,3,1,4,1,0},
+{0,0,0,0,0,1,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,1,0,0,0,0,1,4,1,3,6,3,3,6,3,3,1,3,3,1,1,3,1,1,3,3,1,4,1,0},
+{0,0,0,0,0,1,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,1,0,0,0,0,1,4,1,3,6,6,6,6,3,3,1,3,3,1,3,3,3,1,3,3,1,4,1,0},
+{0,0,0,0,0,1,2,5,1,1,1,2,2,2,2,2,1,1,1,5,2,1,0,0,0,0,1,4,1,3,3,3,3,3,3,3,1,3,3,3,3,3,3,3,3,3,1,4,1,0},
+{0,0,0,0,0,1,2,5,1,1,1,2,7,7,7,2,1,1,1,5,2,1,0,0,0,0,1,4,1,3,3,3,3,3,3,3,1,3,6,6,6,3,6,6,6,3,1,4,1,0},
+{0,0,0,0,0,1,2,5,1,1,1,7,1,1,1,7,1,1,1,5,2,1,0,0,0,0,1,4,1,3,3,3,3,3,3,3,1,3,6,3,6,3,6,3,3,3,1,4,1,0},
+{0,0,0,0,0,1,2,5,1,1,1,7,7,1,7,7,1,1,1,5,2,1,0,0,0,0,1,4,1,3,3,3,3,3,3,3,1,3,6,6,6,3,6,3,3,3,1,4,1,0},
+{0,0,0,0,0,0,1,5,5,5,2,7,1,7,1,7,2,5,5,5,1,0,0,0,0,0,1,4,1,3,3,3,3,3,3,3,1,3,6,3,3,3,6,6,6,3,1,4,1,0},
+{0,0,0,0,0,0,1,2,2,2,2,2,7,7,7,2,2,2,2,2,1,0,0,0,0,0,1,4,1,3,1,1,3,3,1,1,1,1,1,3,3,1,1,3,3,3,1,4,1,0},
+{0,0,0,0,0,0,1,2,2,2,2,2,2,2,2,2,2,2,2,2,1,0,0,0,0,0,1,4,1,1,4,4,1,1,4,4,1,4,4,1,1,4,4,1,1,1,1,4,1,0},
+{0,0,0,0,0,0,0,1,1,1,2,2,2,2,2,2,2,1,1,1,0,0,0,0,0,0,1,4,4,4,1,1,4,4,1,1,1,1,1,4,4,1,1,4,4,4,4,4,1,0},
+{0,0,0,0,0,0,0,0,0,0,1,1,1,1,1,1,1,0,0,0,0,0,0,0,0,0,1,1,1,1,1,1,1,1,4,1,1,1,4,1,1,1,1,1,1,1,1,1,1,0},
+{0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,4,4,4,1,0,0,0,0,0,0,0,0,0,0,0},
+{0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,1,1,0,0,0,0,0,0,0,0,0,0,0,0},
+{0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0},
+{0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0}
+	};
+	HANDLE hConsole = GetStdHandle(STD_OUTPUT_HANDLE);
+	for (int i = 0; i < 25; i++) {
+		for (int j = 0; j < 50; j++) {
+			if (logo[i][j] == 0) {
+				SetConsoleTextAttribute(hConsole, 15); //blanco
+				cout << char(219);
+			}
+			else if (logo[i][j] == 1) {
+				SetConsoleTextAttribute(hConsole, 0); //negro 
+				cout << char(219);
+			}
+			else if (logo[i][j] == 2) {
+				SetConsoleTextAttribute(hConsole, 7); //plata
+				cout << char(219);
+			}
+			else if (logo[i][j] == 4) {
+				SetConsoleTextAttribute(hConsole, 10); //verde
+				cout << char(219);
+			}
+			else if (logo[i][j] == 5) {
+				SetConsoleTextAttribute(hConsole, 12); //rosado 
+				cout << char(219);
+			}
+			else if (logo[i][j] == 6) {
+				SetConsoleTextAttribute(hConsole, 4); //rojo
+				cout << char(219);
+			}
+			else if (logo[i][j] == 7) {
+				SetConsoleTextAttribute(hConsole, 14); //amarllo
+				cout << char(219);
+			}
+			else if (logo[i][j] == 3) {
+				SetConsoleTextAttribute(hConsole, 11); //azul
+				cout << char(219);
+			}
+		}
+		cout << endl;
+	}
+}
 
 ////////////////////////////////clases genericas (estructuras de datos)/////////////////////////////////////////////////////
 ////////////ARBOLES BINARIOS//////////////
 template <class T>
 class Nodo {
 public:
-    T elemento;
-    Nodo* izq;
-    Nodo* der;
+	T elemento;
+	Nodo* izq;
+	Nodo* der;
 };
 template <class T>
 class BinaryTree {
-	vector<T> vec;  
-    Nodo<T>* raiz;
+	vector<T> vec;
+	Nodo<T>* raiz;
 
-    bool _insert(Nodo<T>*& nodo, T e) {
-        if (nodo == nullptr) {
-            nodo = new Nodo<T>();
-            nodo->elemento = e;
-        }
-        else if (e < nodo->elemento) {
-            return _insert(nodo->izq, e);
-        }
-        else if (e >= nodo->elemento) {
-            return _insert(nodo->der, e);
-        }
-    }
-    void _enOrden(Nodo<T>* nodo) {
-        if (nodo == nullptr) return;
-        _enOrden(nodo->izq);
-        cout << nodo->elemento << endl;
-        _enOrden(nodo->der);
-    }
+	bool _insert(Nodo<T>*& nodo, T e) {
+		if (nodo == nullptr) {
+			nodo = new Nodo<T>();
+			nodo->elemento = e;
+		}
+		else if (e < nodo->elemento) {
+			return _insert(nodo->izq, e);
+		}
+		else if (e >= nodo->elemento) {
+			return _insert(nodo->der, e);
+		}
+	}
+	void _enOrden(Nodo<T>* nodo) {
+		if (nodo == nullptr) return;
+		_enOrden(nodo->izq);
+		cout << nodo->elemento << endl;
+		_enOrden(nodo->der);
+	}
 	void _preOrden(Nodo<T>* nodo) {
 		if (nodo != nullptr) {											//primero confirmamos que el arbol no este vacio (raiz)
 			cout << nodo->elemento << " ";						//imprimimos el elemento
@@ -82,16 +153,16 @@ class BinaryTree {
 	}
 
 	//pasar los elemento del arbol a un vector
-	void _treeToVector(Nodo<T>* nodo) { 
+	void _treeToVector(Nodo<T>* nodo) {
 		if (nodo != nullptr) {
-			vec.push_back(nodo->elemento); 
-			_treeToVector(nodo->izq); 
-			_treeToVector(nodo->der); 
+			vec.push_back(nodo->elemento);
+			_treeToVector(nodo->izq);
+			_treeToVector(nodo->der);
 		}
 	}
-	vector<T> _getVector() { 
+	vector<T> _getVector() {
 		return vec;
-	} 
+	}
 	void _printVector(const std::vector<T>& vec) {
 		cout << "[";
 		for (size_t i = 0; i < vec.size(); i++) {
@@ -184,12 +255,12 @@ class BinaryTree {
 
 	Nodo <T>* _encontrarMax(Nodo<T>* nodo) { //encuentra el valor maximo del arbol, recorriendolo hacia la derecha
 		if (nodo == nullptr) { return 0; } //en caso de que el arbol este vacio
-	
-		while (nodo->der!=nullptr)
+
+		while (nodo->der != nullptr)
 		{
 			nodo = nodo->derecha;
 		}
-		return nodo;		
+		return nodo;
 	}
 
 	//ordenamiento
@@ -201,8 +272,8 @@ class BinaryTree {
 		if (gap < 1)
 			return 1;
 		return gap;
-	} 
-	 
+	}
+
 	void _combSort(int n, function<bool(T, T)> comparador) {  // n es la cantidad de elementos que tiene el vector
 		// Initialize gap
 		int gap = n;
@@ -225,36 +296,36 @@ class BinaryTree {
 			// Compare all elements with current gap
 			for (int i = 0; i < n - gap; i++)
 			{
-				if (comparador(vec[i], vec[i + gap])) 
+				if (comparador(vec[i], vec[i + gap]))
 				{
-					swap(vec[i], vec[i + gap]);    
+					swap(vec[i], vec[i + gap]);
 					swapped = true;
 				}
 			}
 		}
-	}  
+	}
 
-	int _partition(int low, int high, function<bool( T,  T)> comparador) {
+	int _partition(int low, int high, function<bool(T, T)> comparador) {
 		T pivote = vec[high];
 		int i = (low - 1);
 
 		for (int j = low; j <= high - 1; j++) {
 			if (comparador(vec[j], pivote)) {
 				i++;
-				swap(vec[i], vec[j]); 
+				swap(vec[i], vec[j]);
 			}
 		}
-		swap(vec[i + 1], vec[high]); 
+		swap(vec[i + 1], vec[high]);
 		return (i + 1);
 	}
 
-	void _quickSort(int low, int high, function<bool(T,T)> comparador) {
+	void _quickSort(int low, int high, function<bool(T, T)> comparador) {
 		if (low < high) {
-			int pi = _partition(vec, low, high, comparador);  
+			int pi = _partition(low, high, comparador);
 
-			_quickSort(vec, low, pi - 1, comparador);  
-			_quickSort(vec, pi + 1, high, comparador); 
-		} 
+			_quickSort(low, pi - 1, comparador);
+			_quickSort(pi + 1, high, comparador);
+		}
 	}
 
 	void _merge(int left, int mid, int right, function<bool(T, T)> comparador) {
@@ -279,15 +350,15 @@ class BinaryTree {
 				i++;
 			}
 			else {
-				vec[k] = rightArr[j]; 
+				vec[k] = rightArr[j];
 				j++;
 			}
 			k++;
 		}
 
 		while (i < n1) {
-			vec[k] = leftArr[i]; 
-			i++;  
+			vec[k] = leftArr[i];
+			i++;
 			k++;
 		}
 
@@ -298,72 +369,108 @@ class BinaryTree {
 		}
 	}
 
-	void _mergeSort(int left, int right, function<bool(T, T)> comparador) { 
-		if (left < right) { 
-			int mid = left + (right - left) / 2; 
+	void _mergeSort(int left, int right, function<bool(T, T)> comparador) {
+		if (left < right) {
+			int mid = left + (right - left) / 2;
 
-			_mergeSort(left, mid, comparador); 
-			_mergeSort(mid + 1, right, comparador); 
-			_merge(left, mid, right, comparador); 
-		} 
+			_mergeSort(left, mid, comparador);
+			_mergeSort(mid + 1, right, comparador);
+			_merge(left, mid, right, comparador);
+		}
 	}
 
 public:
-    BinaryTree() {
-        raiz = nullptr;
-    }
-    bool insert(T e) {
-        return _insert(raiz, e);
-    }
-    void enOrden() {
-        _enOrden(raiz);
-    }
+	BinaryTree() {
+		raiz = nullptr;
+	}
+	bool insert(T e) {
+		return _insert(raiz, e);
+	}
+	void enOrden() {
+		_enOrden(raiz);
+	}
 	void postOrden() {
 		_postOrden(raiz);
 	}
 	void preOrden() { _preOrden(raiz); }
 
-	int binSearch(T e) { return _binSearch(raiz,e);	}
+	int binSearch(T e) { return _binSearch(raiz, e); }
 
 	void treeToVector() { _treeToVector(raiz); }
 
 	vector<T> getVector() { return _getVector(); }
 
-	int interpolarSearch(int n, T X) { return _interpolation_search(n, X);	}
+	int interpolarSearch(T X) { return _interpolation_search(vec.size(), X); }
 
 	int obtProfundidad() { return _obtenerProfundidad(raiz); }
 
-	Nodo<T>* eliminar(T eliminar) { return _eliminar(raiz, eliminar); } 
+	Nodo<T>* eliminar(T eliminar) { return _eliminar(raiz, eliminar); }
 	Nodo <T>* FoundNext() { return _encontrarSiguiente(raiz); }
 	Nodo <T>* foundMax() { return _encontrarMax(raiz); }
 
-	int nextGap(int gap) { return _nextGap(gap);}
+	int nextGap(int gap) { return _nextGap(gap); }
 
-	void combSort(int n, function<bool(T, T)> comparador) {_combSort(n, comparador);}
+	void combSort(int n, function<bool(T, T)> comparador) { _combSort(n, comparador); }
 
-	int partition(int low, int high, function<bool(T, T)> comparador) {return  _partition(low, high, comparador);}
+	int partition(int low, int high, function<bool(T, T)> comparador) { return  _partition(low, high, comparador); }
 
 	void quickSort(int low, int high, function<bool(T, T)> comparador) {
 		_quickSort(low, high, comparador);		//low es 0, high es tamanio del arreglo - 1 y el comparador el operador		
 	}
-	void merge(int left, int mid, int right, function<bool(T, T)> comparador) { _merge(left, mid, right, comparador); } 
+	void merge(int left, int mid, int right, function<bool(T, T)> comparador) { _merge(left, mid, right, comparador); }
 
-	void mergeSort(int left, int right, function<bool(T, T)> comparador) { _mergeSort(left, right, comparador); } 
+	void mergeSort(int left, int right, function<bool(T, T)> comparador) { _mergeSort(left, right, comparador); }
+
+	int ternarySearch(int left, int right, T target) {
+		if (right >= left) {
+			int mid1 = left + (right - left) / 3;
+			int mid2 = right - (right - left) / 3;
+
+			if (vec[mid1] == target) {
+				return mid1;
+			}
+
+			if (vec[mid2] == target) {
+				return mid2;
+			}
+
+			if (target < vec[mid1]) {
+				return ternarySearch(left, mid1 - 1, target);
+			}
+			else if (target > vec[mid2]) {
+				return ternarySearch(mid2 + 1, right, target);
+			}
+			else {
+				return ternarySearch(mid1 + 1, mid2 - 1, target);
+			}
+		}
+
+		return -1;
+	}
+
+	void shuffle() {  //desordenamiento
+		int j;
+		for (size_t i = vec.size() - 1; i > 0; i--) {
+			j = rand() % i;
+			swap(vec[i], vec[j]);
+		}
+	}
 };
 ///////////////////////////HASH TABLES//////////////////////////////////////
 template <class K, class V>
 class HashEntidad {
 private:
-    K key;
-    V value;
+	K key;
+	V value;
 public:
-    HashEntidad(K key, V value) {
-        this->key = key;
-        this->value = value;
-    }
-    K getKey() { return key; }
-    V getValue() { return value; }
+	HashEntidad(K key, V value) {
+		this->key = key;
+		this->value = value;
+	}
+	K getKey() { return key; }
+	V getValue() { return value; }
 };
+
 
 template<class K, class V>
 class HashTabla {
@@ -373,6 +480,7 @@ private:
 	int TABLE_SIZE;
 	int modulo;
 public:
+	HashTabla() = default;
 	HashTabla(int modulo) {
 		TABLE_SIZE = modulo;
 		this->modulo = modulo;
@@ -413,17 +521,17 @@ public:
 		tabla[hash] = new HashEntidad<K, V>(key, value);
 		numElementos++;
 	}
-
 	//Falta arreglar
-	void eliminar(K key) { 
+	void eliminar(const K& key) {
 		int index = buscar(key);  // Buscar el índice del elemento con la clave proporcionada
 
 		if (index != -1) {
+			tabla[index] = nullptr;
 			delete tabla[index];  // Elimina el elemento en la posición index
-			tabla[index] = nullptr;  // Establece el puntero en la posición index a nullptr
 			numElementos--;  // Decrementa el número de elementos
 
 			auto hashActual = hashear(key);
+			// cout << "index: " << index << ",hash actual: " << hashActual << endl;
 			if (hashActual != index) reorganizar(index);
 			else if (hashear(tabla[index + 1]->getKey()) == hashActual) reorganizar(index);
 		}
@@ -440,7 +548,8 @@ public:
 		int step = 0;
 		size_t i, base;
 		i = base = hashear(key); //hash1 es = a hash2 cuando step=0;
-		//hashear, en caso de que la clave no sea un valor entero o flotante.
+		// cout << "hash al buscar: " << base << endl;
+			//hashear, en caso de que la clave no sea un valor entero o flotante.
 		while (true)
 		{
 			if (tabla[i] == nullptr) return -1;
@@ -448,6 +557,7 @@ public:
 				return i;
 			}
 			else step++;  //si no, que el salto aumente, osea que vaya al siguiente espacio
+
 			i = (base + step) % modulo;				//modulamos
 		}
 	}
@@ -461,7 +571,16 @@ public:
 			throw std::runtime_error("¡Se ha producido un error!");		//si no existe, que retorne error
 		}
 	}
-
+	void imprimir() {
+		for (int i = 0; i < TABLE_SIZE; i++) {
+			if (tabla[i] != nullptr) {
+				std::cout << "Clave: " << tabla[i]->getKey() << ", Valor: " << tabla[i]->getValue() << ", hash: " << hashear(tabla[i]->getKey()) << std::endl;
+			}
+			else {
+				cout << i << "\n";
+			}
+		}
+	}
 private:
 	size_t hashear(const K& key) { //convertir cualquier tipo de datos a un valor hash
 		size_t hash = 0;
@@ -481,7 +600,9 @@ private:
 			HashEntidad<K, V>* temp = tabla[nextIndex];	//se crea un puntero temp que apunta al siguiente elemento
 			tabla[nextIndex] = nullptr;
 			numElementos--;
-			insertar(temp->getKey(), temp->getValue());	//se inserta el elemento temp en la tabla
+			if (numElementos < TABLE_SIZE) {
+				insertar(temp->getKey(), temp->getValue());	//se inserta el elemento temp en la tabla
+			}
 			delete temp;
 			nextIndex = (nextIndex + 1) % modulo;
 		}
@@ -583,18 +704,26 @@ public:
 		return fecha_publicacion < otro.fecha_publicacion;
 	}
 
+	bool operator<=(const Libro& otro) {
+		return (fecha_publicacion < otro.fecha_publicacion || fecha_publicacion == otro.fecha_publicacion);
+	}
+
+	bool operator!=(const Libro& otro) {
+		return !(otro.codigo == codigo);
+	}
+
 	bool operator==(const Libro& otro) {
 		return otro.codigo == codigo;
-	} 
-	bool operator>(const Libro& otro) { 
-		return fecha_publicacion > otro.fecha_publicacion; 
+	}
+	bool operator>(const Libro& otro) {
+		return fecha_publicacion > otro.fecha_publicacion;
 	}
 	bool operator>=(const Libro& otro) {
-		return fecha_publicacion >= otro.fecha_publicacion; 
+		return fecha_publicacion >= otro.fecha_publicacion;
 	}
 	//sobrecarga para poder coutear
 	friend ostream& operator<<(ostream& os, Libro libro) {
-		os << libro.codigo << " | " << libro.titulo << " | " 
+		os << libro.codigo << " | " << libro.titulo << " | "
 			<< libro.autor << " | " << libro.fecha_publicacion << " | " << libro.precio << endl;
 		return os;
 	}
@@ -603,39 +732,54 @@ public:
 
 /////////////////////////CLASE COLECCIONADORA/////////////////////////////
 enum TiposOrden { EnOrden, PreOrden, PostOrden };
-
+enum TipoOrdenamiento { MERGE, QUICK, COMB };
 class Biblioteca {
+	friend class Tests;
 	BinaryTree<Libro> arbol;
-	HashTabla<string, Libro> tablaHash;
+	HashTabla<string, Libro> tablaHash = HashTabla<string, Libro>(13000);
 public:
 	Biblioteca() = default;
 	void insertar(Libro libro) {
 		arbol.insert(libro);
 		tablaHash.insertar(libro.getCodigo(), libro);
 	}
+	void ordenar(TipoOrdenamiento tipo) {
+		arbol.treeToVector();
+		auto vectorArbol = arbol.getVector();
+
+		auto funcCompare = [](Libro a, Libro b) {return a < b; };
+
+		if (tipo == MERGE) arbol.mergeSort(0, vectorArbol.size() - 1, funcCompare);
+		else if (tipo == QUICK) arbol.quickSort(0, vectorArbol.size() - 1, funcCompare);
+		else if (tipo == COMB) arbol.combSort(vectorArbol.size(), funcCompare);
+	}
 	void eliminar(string codigo) {
 		arbol.eliminar(Libro(codigo, "", "", "", 0));
 		tablaHash.eliminar(codigo);
 	}
+	Libro get(string codigo) {
+		return tablaHash.get(codigo);
+	}
 	void eliminar(Libro libro) {
 		eliminar(libro.getCodigo());
 	}
+	int buscar(string codigo) {
+		return tablaHash.buscar(codigo);
+	}
 	// impresion de recorridos
-	void recorrer(TiposOrden orden)  {
+	void recorrer(TiposOrden orden) {
 		if (orden == EnOrden) { arbol.enOrden(); }
-		else if (orden == PreOrden) { arbol.preOrden(); } 
-		else if (orden == PostOrden) { arbol.postOrden(); } 
+		else if (orden == PreOrden) { arbol.preOrden(); }
+		else if (orden == PostOrden) { arbol.postOrden(); }
 	}
 	//sobrecaga para coutear el recorrido EnOrden
-	friend ostream& operator<<(ostream& os, Biblioteca& b) { 
+	friend ostream& operator<<(ostream& os, Biblioteca& b) {
 		b.recorrer(EnOrden);
 		return os;
 	}
 };
 
 //LEER ARCHIVOS
-// falta terminar
-//https://github.com/rsylvian/CSVparser/blob/master/CSVparser.cpp
 class Fila {
 	vector<string> columnas;
 	vector<string> vals;
@@ -643,6 +787,7 @@ class Fila {
 public:
 	Fila() = default;
 	Fila(const vector<string>& cols) : columnas(cols) {};
+	int size() { return columnas.size(); }
 	void push(const string& val) { vals.push_back(val); }
 	bool set(const string& col, const string& val) {
 		int pos = 0;
@@ -661,7 +806,6 @@ public:
 		int pos = 0;
 
 		for (; it != columnas.end(); it++) {
-			cout << *it << "  ";
 			if (col == *it)
 				return vals[pos];
 			pos++;
@@ -671,6 +815,13 @@ public:
 	const string operator[](unsigned int valuePosition) const {
 		if (valuePosition < vals.size())
 			return vals[valuePosition];
+	}
+
+	friend ostream& operator<<(ostream& os, Fila fila) {
+		for (int i = 0; i < fila.size(); i++) {
+			os << fila.columnas[i] << ": " << fila[i] << endl;
+		}
+		return os;
 	}
 };
 
@@ -700,9 +851,10 @@ public:
 				length++;
 			}
 		}
-
 		archivo.close();
+
 		parseHeader();
+		length--;
 		parseContenido();
 	}
 
@@ -712,9 +864,8 @@ public:
 private:
 	void parseHeader() {
 		auto it = data.begin();
-		string linea = *it;
-		vector<string> header = procesarLinea(linea);
-		columnas = header;
+		vector<string> header = procesarLinea(*it);
+		this->columnas = header;
 	}
 
 	vector<string> procesarLinea(string linea) {
@@ -738,6 +889,7 @@ private:
 			auto row = procesarLinea(linea);
 			for (auto campo : row)
 				fila.push(campo);
+
 			filas.push_back(fila);
 		}
 	}
@@ -746,24 +898,77 @@ private:
 
 ////////////////////////////CLASE CONTROLADORA////////////////////////
 //COMO LAMBDAS
-using busquedaFunc = void(*)(Libro); // esto es un alias
+using busquedaFunc = void(*)(Libro); // esto es un alias 
 using ordenamientoFunc = void(*)(); // en el segundo parenteis pones el tipo de parametro que recibe la función
 
 class Tests {
+	DataFrame df;
+	BinaryTree<Libro> arbol;
+	string tipoAlgoritmo;
+	int cantDatos;
+	vector<Libro> vectorArbol;
+public:
 	Tests() = default;
+	Tests(const Biblioteca& biblioteca) {
+		arbol = biblioteca.arbol;
+		arbol.treeToVector();
+		vectorArbol = arbol.getVector();
+		cantDatos = vectorArbol.size();
+	}
+	void init() {
+		int i = rand() % vectorArbol.size();
+		auto libro = vectorArbol.at(i);
+		compararBusqueda(libro);
+		compararOrdenameinto(libro);
+	}
 	//PASAR DOS ALGORITMOS POR PARAMETRO Y QUE LOS COMPARE
 	//DE BUSQUEDA
-	void compararBusqueda(busquedaFunc, busquedaFunc){}
+	void compararBusqueda(Libro libro) {
+		chrono::time_point<std::chrono::system_clock> start1, end1, start2, end2;
+
+		start1 = chrono::system_clock::now();
+		arbol.binSearch(libro);
+		end1 = chrono::system_clock::now();
+
+		start2 = chrono::system_clock::now();
+		arbol.ternarySearch(0, vectorArbol.size(), libro);
+		end2 = chrono::system_clock::now();
+
+		chrono::duration<double> tiempo1 = end1 - start1;
+		chrono::duration<double> tiempo2 = end2 - start2;
+		tipoAlgoritmo = "Comparacion Binsearch vs TernarySearch";
+		exportar("_busq", tiempo1, tiempo2);
+	}
 	//DE ORDENAMIENTO
-	void compararOrdenameinto(ordenamientoFunc, ordenamientoFunc){} 
+	void compararOrdenameinto(Libro libro) {
+		chrono::time_point<std::chrono::system_clock> start1, end1, start2, end2;
+
+		auto funcComp = [](Libro a, Libro b) {return a < b; };
+
+		start1 = chrono::system_clock::now();
+		arbol.combSort(vectorArbol.size(), funcComp);
+		end1 = chrono::system_clock::now();
+
+		arbol.shuffle();
+
+		start2 = chrono::system_clock::now();
+		arbol.quickSort(0, vectorArbol.size() - 1, funcComp);
+		end2 = chrono::system_clock::now();
+
+		chrono::duration<double> tiempo1 = end1 - start1;
+		chrono::duration<double> tiempo2 = end2 - start2;
+		tipoAlgoritmo = "Comparacion CombSort vs QuickSort";
+		exportar("_ord", tiempo1, tiempo2);
+	}
 
 	//EXPORTAR LOS RESULTADOS OBTENIDOS A UN TXT
-	void exportar(double tiempo, string tipoAlgoritmo, int cantDatos) {
-		ofstream archivo("resultados.txt");
-		if (!archivo.is_open()) {
-			archivo << "Tiempo: " << tiempo;
-			archivo << "Algoritmo: " << tipoAlgoritmo;
-			archivo << "Cant. de datos: " << cantDatos;
+	void exportar(string sufijo, chrono::duration<double>tiempo1, chrono::duration<double>tiempo2) {
+		ofstream archivo("resultados" + sufijo + ".txt");
+		if (archivo.is_open()) {
+			archivo << "Tiempo1: " << tiempo1.count() << endl;
+			archivo << "Tiempo2: " << tiempo2.count() << endl;
+			archivo << "Algoritmo: " << tipoAlgoritmo << endl;
+			archivo << "Cant. de datos: " << cantDatos << endl;
 			archivo.close();
 		}
 	}
@@ -779,16 +984,33 @@ int menu() {
 	cout << "4) Eliminar un libro " << endl;
 	cout << "5) Ejecutar el testeo " << endl;
 	cin >> eleccion;
-	return eleccion; 
+	return eleccion;
 }
 //UNIR TODO AL MAIN
 int main()
 {
+	srand(time(NULL));
+	DataFrame df;
+	df.read_csv("libros.csv");
+
+	Biblioteca biblioteca;
+
+	for (int i = 0; i < df.size(); i++) {
+		Fila fila = df[i];
+		float precio = stof(fila[4]);
+		Libro libro = Libro(fila[0], fila[1], fila[3], fila[4], precio);
+		biblioteca.insertar(libro);
+	}
+
+	dibujarLogo();
+	system("pause");
+	system("cls");
 	int eleccion = menu();
-	switch (eleccion) 
+
+	switch (eleccion)
 	{
 	case 1: {
-		//MOSTRAR EL REGISTRO DESORDENADO
+		cout << biblioteca << endl;
 		break;
 	}
 	case 2: {
@@ -800,33 +1022,38 @@ int main()
 		cin >> ordenamiento;
 		if (ordenamiento == 1) {
 			//ACA VA EL COMB
+			biblioteca.ordenar(COMB);
 		}
 		else if (ordenamiento == 2) {
 			//ACA VA EL QUICK
+			biblioteca.ordenar(QUICK);
 		}
-		else {//ACA VA EL MERGE}
+		else {
+			biblioteca.ordenar(MERGE);
 			break;
 		}
 	}
 	case 3: {
-		//BUSCAR LIBRO POR CODIGO
+		string cod;
+		cout << "ingrese el codigo: "; cin >> cod;
+		int i = biblioteca.buscar(cod);
+		if (i == -1) {
+			cout << "El libro no existe";
+		}
+		else cout << biblioteca.get(cod);
 		break;
 	}
 	case 4: {
-		//ELIMINAR LIBRO POR CODIGO
+		string cod;
+		cout << "ingrese el codigo: "; cin >> cod;
+		biblioteca.eliminar(cod);
 		break;
 	}
 	case 5: {
-		char decision;
-		//TESTEAR
-		cout << "Desea ver los resultados? "; cin >> decision;
-		decision = toupper(decision);
-		if (decision == 'F') break;
-		else {
-			//ACA SE MUESTRAN LOS RESULTADOS EL TXT
-		}
+		Tests test(biblioteca);
+		test.init();
 		break;
 	}
 	}
-    return 0;
+	return 0;
 }
