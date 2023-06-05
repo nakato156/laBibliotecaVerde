@@ -1,0 +1,4 @@
+Tiempo1: 0.0014171
+Tiempo2: 1.8e-05
+Algoritmo: Comparacion Binsearch vs TernarySearch
+Cant. de datos: 13544

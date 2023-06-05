@@ -1,0 +1,4 @@
+Tiempo1: 2.77096
+Tiempo2: 26.8827
+Algoritmo: Comparacion CombSort vs QuickSort
+Cant. de datos: 13544
