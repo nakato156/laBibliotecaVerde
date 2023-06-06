@@ -488,9 +488,9 @@ template<class K, class V>
 class HashTabla {
 private:
 	HashEntidad<K, V>** tabla;
-	int numElementos;
-	int TABLE_SIZE;
-	int modulo;
+	int numElementos; 
+	int TABLE_SIZE; 
+	int modulo; 
 public:
 	HashTabla() = default;
 	//constructor
@@ -596,6 +596,34 @@ public:
 			}
 		}
 	}
+	//IDEAS PARA NUEVOS METODOS
+	vector<Libro> buscarPorAutor(string autor) { 
+		vector<Libro> librosEncontrados;  
+		for (int i = 0; i < TABLE_SIZE; i++) { 
+			if (tabla[i] != nullptr && tabla[i]->getValue().getAutor() == autor) {   
+				librosEncontrados.push_back(tabla[i]->getValue());   
+				cout << "Encontrado" << endl; 
+			}
+		}
+		return librosEncontrados; 
+	}
+	int contador(string autor) {
+		size_t contador = 0;
+		for (int i = 0; i < TABLE_SIZE; i++) {
+			if (tabla[i] != nullptr && tabla[i]->getValue().getAutor() == autor) {
+				contador++;
+			}
+		}
+		return contador;
+	}
+
+	void actualizarPrecio(string codigo, float precioNuevo) { 
+		int index = buscar(codigo); 
+		if (index != -1) { 
+			tabla[index]->getValue().setPrecio(precioNuevo);    
+		}
+	}
+
 private:
 	size_t hashear(const K& key) { //convertir cualquier tipo de datos a un valor hash
 		size_t hash = 0;
@@ -720,6 +748,7 @@ public:
 	string getAutor() { return autor; }
 	string getFechaPub() { return fecha_publicacion; }
 	float getPrecio() { return precio; }
+	float setPrecio(float precio) { this->precio = precio; }
 
 	//SOBRECARGA DE OPERADORES EN LA CLASE LIBRO
 
@@ -803,6 +832,18 @@ public:
 	int buscar(string codigo) {
 		//buscar en hash de un libro por codigo
 		return tablaHash.buscar(codigo);
+	}
+	/*vector<Libro> listaAutores(string autor) {
+		return tablaHash.buscarPorAutor(autor); 
+	}*/
+
+	//contar libros por autor
+	int contadorLibros(string autor) {
+		return tablaHash.contador(autor); 
+	}
+	//Editar precio
+	void editarPrecio(string codigo, float precio) {
+		tablaHash.actualizarPrecio(codigo, precio);   
 	}
 	// impresion de recorridos
 	void recorrer(TiposOrden orden) {
