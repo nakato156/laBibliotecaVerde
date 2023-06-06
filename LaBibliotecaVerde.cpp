@@ -596,17 +596,20 @@ public:
 			}
 		}
 	}
+	
 	//IDEAS PARA NUEVOS METODOS
-	vector<Libro> buscarPorAutor(string autor) { 
-		vector<Libro> librosEncontrados;  
+	template <typename Comparador>
+	vector<V> buscarPor(Comparador comparador) { 
+		vector<V> librosEncontrados;  
 		for (int i = 0; i < TABLE_SIZE; i++) { 
-			if (tabla[i] != nullptr && tabla[i]->getValue().getAutor() == autor) {   
+			if (tabla[i] != nullptr && comparador(tabla[i]->getValue())) {
 				librosEncontrados.push_back(tabla[i]->getValue());   
 				cout << "Encontrado" << endl; 
 			}
 		}
 		return librosEncontrados; 
 	}
+
 	int contador(string autor) {
 		size_t contador = 0;
 		for (int i = 0; i < TABLE_SIZE; i++) {
@@ -810,6 +813,13 @@ public:
 		arbol.insert(libro);
 		tablaHash.insertar(libro.getCodigo(), libro);
 	}
+
+	vector<Libro> buscarPorAutor(string autor) {
+		return tablaHash.buscarPor([&autor](Libro libro) {
+			return libro.getAutor() == autor;
+		});
+	}
+
 	//ordenamiento del arbol
 	void ordenar(TipoOrdenamiento tipo) {
 		//convertir el arbol a vector
@@ -996,11 +1006,13 @@ class Tests {
 	string tipoAlgoritmo;
 	int cantDatos;
 	vector<Libro> vectorArbol;
+	Biblioteca biblioteca;
 public:
 	Tests() = default;
 	//constructor
 	Tests(const Biblioteca& biblioteca) {
 		arbol = biblioteca.arbol;
+		this->biblioteca = biblioteca;
 		arbol.treeToVector();
 		vectorArbol = arbol.getVector();
 		cantDatos = vectorArbol.size();
@@ -1012,6 +1024,12 @@ public:
 		compararBusqueda(libro);
 		compararOrdenameinto(libro);
 	}
+
+	void testsRaros() {
+		cout << "probando busqueda\n";
+		busquedaPorAutor();
+	}
+
 	//PASAR DOS ALGORITMOS POR PARAMETRO Y QUE LOS COMPARE
 	//DE BUSQUEDA
 	void compararBusqueda(Libro libro) {
@@ -1058,6 +1076,15 @@ public:
 		exportar("_ord", tiempo1, tiempo2);
 	}
 
+	void busquedaPorAutor(string autor = "Jane Doe") {
+		cout << "Buscando por autor: " << autor << endl;
+		auto libros = biblioteca.buscarPorAutor(autor);
+		cout << "resultados:\n";
+		for (auto libro : libros) {
+			cout << libro << endl;
+		}
+	}
+
 	//EXPORTAR LOS RESULTADOS OBTENIDOS A UN TXT
 	void exportar(string sufijo, chrono::duration<double>tiempo1, chrono::duration<double>tiempo2) {
 		ofstream archivo("resultados" + sufijo + ".txt");
@@ -1081,6 +1108,7 @@ int menu() {
 	cout << "3) Buscar en el registro " << endl;
 	cout << "4) Eliminar un libro " << endl;
 	cout << "5) Ejecutar el testeo " << endl;
+	cout << "6) Tests Raros" << endl;
 	cin >> eleccion;
 	return eleccion;
 }
@@ -1104,53 +1132,58 @@ int main()
 	dibujarLogo();
 	system("pause");
 	system("cls");
+
 	int eleccion = menu();
 
 	switch (eleccion)
 	{
-	case 1: {
-		cout << biblioteca << endl;
-		break;
-	}
-	case 2: {
-		int ordenamiento;
-		cout << "Como desea ordenarlos? " << endl;
-		cout << "1) CombSort " << endl;
-		cout << "2) QuickSort " << endl;
-		cout << "3) MergeSort " << endl;
-		cin >> ordenamiento;
-		if (ordenamiento == 1) {
-			biblioteca.ordenar(COMB);
-		}
-		else if (ordenamiento == 2) {
-			biblioteca.ordenar(QUICK);
-		}
-		else {
-			biblioteca.ordenar(MERGE);
+		case 1: {
+			cout << biblioteca << endl;
 			break;
 		}
-	}
-	case 3: {
-		string cod;
-		cout << "ingrese el codigo: "; cin >> cod;
-		int i = biblioteca.buscar(cod);
-		if (i == -1) {
-			cout << "El libro no existe";
+		case 2: {
+			int ordenamiento;
+			cout << "Como desea ordenarlos? " << endl;
+			cout << "1) CombSort " << endl;
+			cout << "2) QuickSort " << endl;
+			cout << "3) MergeSort " << endl;
+			cin >> ordenamiento;
+			if (ordenamiento == 1) {
+				biblioteca.ordenar(COMB);
+			}
+			else if (ordenamiento == 2) {
+				biblioteca.ordenar(QUICK);
+			}
+			else {
+				biblioteca.ordenar(MERGE);
+				break;
+			}
 		}
-		else cout << biblioteca.get(cod);
-		break;
-	}
-	case 4: {
-		string cod;
-		cout << "ingrese el codigo: "; cin >> cod;
-		biblioteca.eliminar(cod);
-		break;
-	}
-	case 5: {
-		Tests test(biblioteca);
-		test.init();
-		break;
-	}
+		case 3: {
+			string cod;
+			cout << "ingrese el codigo: "; cin >> cod;
+			int i = biblioteca.buscar(cod);
+			if (i == -1) {
+				cout << "El libro no existe";
+			}
+			else cout << biblioteca.get(cod);
+			break;
+		}
+		case 4: {
+			string cod;
+			cout << "ingrese el codigo: "; cin >> cod;
+			biblioteca.eliminar(cod);
+			break;
+		}
+		case 5: {
+			Tests test(biblioteca);
+			test.init();
+			break;
+		}
+		case 6: {
+			Tests test(biblioteca);
+			test.testsRaros();
+		}
 	}
 	return 0;
 }
