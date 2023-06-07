@@ -202,9 +202,9 @@ class BinaryTree {
 	{
 		while (lo <= hi) {
 			int m = lo + (hi - lo) / 2;
-			if (vec[m] == x)
+			if (vec[m].getCodigo() == x)
 				return m;
-			if (vec[m] < x)
+			if (vec[m].getCodigo() < x)
 				lo = m + 1;
 			else
 				hi = m - 1;
@@ -214,10 +214,10 @@ class BinaryTree {
 
 	int _exponentialSearch(int n, T x)
 	{
-		if (vec[0] == x)
+		if (vec[0].getCodigo() == x)
 			return 0;
 		int i = 1;
-		while (i < n && vec[i] <= x)
+		while (i < n && vec[i].getCodigo() <= x) 
 			i = i * 2;
 
 		return _binarySearch(i / 2, min(i, n - 1), x);     
