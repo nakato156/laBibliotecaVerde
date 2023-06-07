@@ -198,6 +198,31 @@ class BinaryTree {
 			return -1;
 	}
 
+	int _binarySearch(int lo, int hi, T x)
+	{
+		while (lo <= hi) {
+			int m = lo + (hi - lo) / 2;
+			if (vec[m] == x)
+				return m;
+			if (vec[m] < x)
+				lo = m + 1;
+			else
+				hi = m - 1;
+		}
+		return -1;
+	}
+
+	int _exponentialSearch(int n, T x)
+	{
+		if (vec[0] == x)
+			return 0;
+		int i = 1;
+		while (i < n && vec[i] <= x)
+			i = i * 2;
+
+		return _binarySearch(i / 2, min(i, n - 1), x);     
+	}
+
 	int _obtenerProfundidad(Nodo<T>* nodo) {//caso0 
 		if (nodo == nullptr) { return 0; } //en caso de que el arbol este vacio
 		else
@@ -402,6 +427,10 @@ public:
 	void preOrden() { _preOrden(raiz); }
 
 	int binSearch(T e) { return _binSearch(raiz, e); }
+
+	int binarySearch(int low, int high, T x) { return _binarySearch(low, high, x); } 
+
+	int exponencialSearch(int n, T x) {  return _exponentialSearch(n, x); }
 
 	void treeToVector() { _treeToVector(raiz); }
 
@@ -1034,7 +1063,7 @@ public:
 	//DE BUSQUEDA
 	void compararBusqueda(Libro libro) {
 		//USAMOS EL CHRONO PARA MEDIR EL TIEMPO CON EL QUE INICIA A COMPILAR Y TERMINA DE COMPILAR
-		chrono::time_point<std::chrono::system_clock> start1, end1, start2, end2;
+		chrono::time_point<std::chrono::system_clock> start1, end1, start2, end2, start3, end3;
 
 		start1 = chrono::system_clock::now();
 		arbol.binSearch(libro);
@@ -1043,18 +1072,24 @@ public:
 		start2 = chrono::system_clock::now();
 		arbol.ternarySearch(0, vectorArbol.size(), libro);
 		end2 = chrono::system_clock::now();
+
+		start3 = chrono::system_clock::now();
+		arbol.exponencialSearch(vectorArbol.size(), libro);  
+		end3 = chrono::system_clock::now();
+
 		//se restan ambos para tener el tiempo total transcurrido
-		chrono::duration<double> tiempo1 = end1 - start1;
-		chrono::duration<double> tiempo2 = end2 - start2;
+		chrono::duration<double> tiempo1 = end1 - start1; 
+		chrono::duration<double> tiempo2 = end2 - start2; 
+		chrono::duration<double> tiempo3 = end3 - start3; 
 		//lo cargamos a nuestro archivo txt que tendra los resultados
-		tipoAlgoritmo = "Comparacion Binsearch vs TernarySearch";
-		exportar("_busq", tiempo1, tiempo2);
+		tipoAlgoritmo = "Comparacion Binsearch vs TernarySearch vs ExponencialSearch";
+		exportar("_busq", tiempo1, tiempo2, tiempo3);
 	}
 	//DE ORDENAMIENTO
 	void compararOrdenameinto(Libro libro) {
 		//USAMOS EL CHRONO PARA MEDIR EL TIEMPO CON EL QUE INICIA A COMPILAR Y TERMINA DE COMPILAR
 
-		chrono::time_point<std::chrono::system_clock> start1, end1, start2, end2;
+		chrono::time_point<std::chrono::system_clock> start1, end1, start2, end2, start3, end3;
 
 		auto funcComp = [](Libro a, Libro b) {return a < b; };
 
@@ -1067,13 +1102,20 @@ public:
 		start2 = chrono::system_clock::now();
 		arbol.quickSort(0, vectorArbol.size() - 1, funcComp);
 		end2 = chrono::system_clock::now();
-		//se restan ambos para tener el tiempo total transcurrido
+		arbol.shuffle();
 
+		start3 = chrono::system_clock::now();
+		arbol.mergeSort(0, vectorArbol.size() - 1, funcComp); 
+		end3 = chrono::system_clock::now(); 
+
+		
+		//se restan ambos para tener el tiempo total transcurrido
 		chrono::duration<double> tiempo1 = end1 - start1;
-		chrono::duration<double> tiempo2 = end2 - start2;
+		chrono::duration<double> tiempo2 = end2 - start2; 
+		chrono::duration<double> tiempo3 = end3 - start3;
 		//lo cargamos a nuestro archivo txt que tendra los resultados
-		tipoAlgoritmo = "Comparacion CombSort vs QuickSort";
-		exportar("_ord", tiempo1, tiempo2);
+		tipoAlgoritmo = "Comparacion CombSort vs QuickSort vs MergeSort";
+		exportar("_ord", tiempo1, tiempo2, tiempo3); 
 	}
 
 	void busquedaPorAutor(string autor = "Jane Doe") {
@@ -1086,13 +1128,14 @@ public:
 	}
 
 	//EXPORTAR LOS RESULTADOS OBTENIDOS A UN TXT
-	void exportar(string sufijo, chrono::duration<double>tiempo1, chrono::duration<double>tiempo2) {
+	void exportar(string sufijo, chrono::duration<double>tiempo1, chrono::duration<double>tiempo2, chrono::duration<double>tiempo3) {
 		ofstream archivo("resultados" + sufijo + ".txt");
 		if (archivo.is_open()) {
 			archivo << "Tiempo1: " << tiempo1.count() << endl;
-			archivo << "Tiempo2: " << tiempo2.count() << endl;
-			archivo << "Algoritmo: " << tipoAlgoritmo << endl;
-			archivo << "Cant. de datos: " << cantDatos << endl;
+			archivo << "Tiempo2: " << tiempo2.count() << endl; 
+			archivo << "Tiempo3: " << tiempo3.count() << endl; 
+			archivo << "Algoritmo: " << tipoAlgoritmo << endl; 
+			archivo << "Cant. de datos: " << cantDatos << endl; 
 			archivo.close();
 		}
 	}
